@@ -1,0 +1,30 @@
+(async function() {
+    // Dynamically load HTML2Canvas library
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    document.head.appendChild(script);
+
+    // Wait until HTML2Canvas is fully loaded
+    await new Promise(resolve => script.onload = resolve);
+
+    // Select the complete table element
+    const table = document.querySelector('table'); // Ensure this selector matches your table
+    if (!table) {
+        console.error("Table element not found.");
+        return;
+    }
+
+    // Ensure fonts and images are fully loaded, with a short delay
+    await document.fonts.ready;
+    await new Promise(resolve => setTimeout(resolve, 2000)); // 2-second delay for icons/images
+
+    // Capture the entire table, including <thead> and <tbody>
+    html2canvas(table, { useCORS: true, allowTaint: true }).then(canvas => {
+        // Create a downloadable link for the screenshot
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL('image/png');
+        link.download = 'table_full_screenshot.png';
+        link.click();
+        console.log("Screenshot taken and downloaded as table_full_screenshot.png");
+    }).catch(err => console.error("Failed to take screenshot:", err));
+})();
